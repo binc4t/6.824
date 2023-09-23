@@ -14,6 +14,11 @@ import "strconv"
 // and reply for an RPC.
 //
 
+const (
+	TaskTypeMap    = "map"
+	TaskTypeReduce = "Reduce"
+)
+
 type ExampleArgs struct {
 	X int
 }
@@ -22,8 +27,26 @@ type ExampleReply struct {
 	Y int
 }
 
-// Add your RPC definitions here.
+type GetTaskArgs struct {
+}
 
+type GetTaskReply struct {
+	File     string // URI or File path
+	TaskType string
+	TaskID   int
+	NReduce  int
+}
+
+type TaskDoneArgs struct {
+	TaskType string
+	TaskID   int
+}
+
+type TaskDoneReply struct {
+	OK bool
+}
+
+// Add your RPC definitions here.
 
 // Cook up a unique-ish UNIX-domain socket name
 // in /var/tmp, for the coordinator.

@@ -23,18 +23,18 @@ func main() {
 	}
 
 	mapf, reducef := loadPlugin(os.Args[1])
+	_ = mapf
+	_ = reducef
 
 	mr.Worker(mapf, reducef)
 }
 
-//
 // load the application Map and Reduce functions
 // from a plugin file, e.g. ../mrapps/wc.so
-//
 func loadPlugin(filename string) (func(string, string) []mr.KeyValue, func(string, []string) string) {
 	p, err := plugin.Open(filename)
 	if err != nil {
-		log.Fatalf("cannot load plugin %v", filename)
+		log.Fatalf("cannot load plugin %v, err: %v", filename, err)
 	}
 	xmapf, err := p.Lookup("Map")
 	if err != nil {

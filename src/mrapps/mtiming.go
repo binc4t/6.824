@@ -37,6 +37,7 @@ func nparallel(phase string) int {
 		panic(err)
 	}
 	ret := 0
+	fmt.Printf("pid %d get names: %v\n", pid, names)
 	for _, name := range names {
 		var xpid int
 		pat := fmt.Sprintf("mr-worker-%s-%%d", phase)

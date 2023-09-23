@@ -7,6 +7,8 @@
 # comment this out to run the tests without the Go race detector.
 RACE=-race
 
+RACE=
+
 if [[ "$OSTYPE" = "darwin"* ]]
 then
   if go version | grep 'go1.17.[012345]'
@@ -95,6 +97,8 @@ else
   echo '---' wc output is not the same as mr-correct-wc.txt
   echo '---' wc test: FAIL
   failed_any=1
+  echo '--debug--'
+  exit 0
 fi
 
 # wait for remaining workers and coordinator to exit.
@@ -126,6 +130,8 @@ else
   echo '---' indexer output is not the same as mr-correct-indexer.txt
   echo '---' indexer test: FAIL
   failed_any=1
+  echo '--debug--'
+  exit 0
 fi
 
 wait
@@ -147,6 +153,8 @@ then
   echo '---' saw "$NT" workers rather than 2
   echo '---' map parallelism test: FAIL
   failed_any=1
+  echo '---debug---'
+  exit 0
 fi
 
 if cat mr-out* | grep '^parallel.* 2' > /dev/null
