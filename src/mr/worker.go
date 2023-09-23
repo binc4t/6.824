@@ -190,21 +190,21 @@ func Worker(mapf func(string, string) []KeyValue,
 		t := GetTask()
 		if t == nil {
 			// fmt.Println("no task to do")
-			// continue
-			return
+			continue
+			//return
 		}
 		w := NewWork(t.nReduce, mapf, reducef)
 		if t.taskType == TaskTypeMap {
 			w.file = t.file
 			err := w.DoMap()
 			if err != nil {
-				log.Fatal(err)
+				//fmt.Printf("DoMap err, err: %v\n", err)
 			}
 		} else if t.taskType == TaskTypeReduce {
 			w.id = t.id
 			err := w.DoReduce()
 			if err != nil {
-				log.Fatal(err)
+				//fmt.Printf("DoReduce err, err: %v\n", err)
 			}
 		}
 		FinishTask(t)
@@ -218,7 +218,6 @@ func GetTask() *Task {
 	ok := call("Coordinator.GetTask", &args, &reply)
 
 	if ok && reply.TaskType != "" {
-
 		//fmt.Printf("task get success, task %d, type: %s\n", reply.TaskID, reply.TaskType)
 		return &Task{
 			id:       reply.TaskID,

@@ -96,7 +96,7 @@ type Coordinator struct {
 	nReduce     int
 	timeout     time.Duration
 
-	l sync.Mutex
+	l sync.RWMutex
 }
 
 func rmFile(pattern string) error {
@@ -132,7 +132,7 @@ func (c *Coordinator) GetTask(args *GetTaskArgs, reply *GetTaskReply) error {
 	c.l.Lock()
 	c.l.Unlock()
 	cur = c.mapTasks.GetTaskNotDoing()
-	if cur == nil {
+	if cur == nil && len(c.mapTasks) == 0 {
 		cur = c.reduceTasks.GetTaskNotDoing()
 	}
 	if cur == nil {
@@ -157,12 +157,19 @@ func (c *Coordinator) TaskDone(args *TaskDoneArgs, reply *TaskDoneReply) error {
 	case TaskTypeReduce:
 		c.reduceTasks.FinishTask(args.TaskID)
 	}
+	fmt.Printf("task done, %d, %s\n", args.TaskID, args.TaskType)
 	reply.OK = true
 	return nil
 }
 
 func (c *Coordinator) checkDone() bool {
-	return len(c.mapTasks) == 0 && len(c.reduceTasks) == 0
+	c.l.RLock()
+	defer c.l.RUnlock()
+	if len(c.mapTasks) == 0 && len(c.reduceTasks) == 0 {
+		fmt.Println("no jobs, coordinator should exit!")
+		return true
+	}
+	return false
 }
 
 // start a thread that listens for RPCs from worker.go
